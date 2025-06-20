@@ -160,9 +160,11 @@ export default function ApplicationsPage() {
                         <p className="text-xs text-muted-foreground mb-1">
                           {app.job.title}
                         </p>
-                        <p className="text-xs text-muted-foreground mb-3">
-                          {app.job.department.name}
-                        </p>
+                        {app.job.department_name && (
+                          <p className="text-xs text-muted-foreground mb-3">
+                            {app.job.department_name}
+                          </p>
+                        )}
                         
                         <div className="flex gap-2">
                           <Button
@@ -226,7 +228,7 @@ export default function ApplicationsPage() {
                             {app.candidate.first_name} {app.candidate.last_name}
                           </td>
                           <td className="p-2">{app.job.title}</td>
-                          <td className="p-2">{app.job.department.name}</td>
+                          <td className="p-2">{app.job.department_name || 'Non défini'}</td>
                           <td className="p-2">
                             <Badge variant="outline" className="text-xs">
                               {statusBadge?.title}

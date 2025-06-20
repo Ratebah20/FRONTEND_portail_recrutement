@@ -52,7 +52,13 @@ export interface Application {
   created_at: string;
   updated_at: string;
   candidate: Candidate;
-  job: Job;
+  job: {
+    id: number;
+    title: string;
+    department_id?: number;
+    department_name?: string;
+    department?: Department;
+  };
 }
 
 export enum ApplicationStatus {

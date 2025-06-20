@@ -129,14 +129,16 @@ export default function HRDashboard() {
                       <div className="flex-1">
                         <h3 className="font-medium">{app.candidate.first_name} {app.candidate.last_name}</h3>
                         <p className="text-sm text-muted-foreground">{app.job.title}</p>
-                        <p className="text-xs text-muted-foreground mt-1">{app.job.department.name}</p>
+                        {app.job.department_name && (
+                          <p className="text-xs text-muted-foreground mt-1">{app.job.department_name}</p>
+                        )}
                       </div>
                       
                       <div className="flex items-center gap-4">
                         {app.ai_score && (
                           <div className="text-right">
                             <p className="text-sm font-medium">Score IA</p>
-                            <p className="text-2xl font-bold text-primary">{app.ai_score}%</p>
+                            <p className="text-2xl font-bold text-primary">{Math.round(app.ai_score)}%</p>
                           </div>
                         )}
                         
