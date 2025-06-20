@@ -3,6 +3,7 @@
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AnimatedText } from '@/src/components/animations/AnimatedText';
+import { DashboardLayout } from '@/src/components/layouts/DashboardLayout';
 import { 
   Users, 
   Briefcase, 
@@ -31,7 +32,8 @@ const recentApplications = [
 
 export default function HRDashboard() {
   return (
-    <div className="container mx-auto px-4 py-8">
+    <DashboardLayout>
+      <div className="container mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8">
         <AnimatedText 
@@ -147,5 +149,6 @@ export default function HRDashboard() {
         </div>
       </div>
     </div>
+    </DashboardLayout>
   );
 }
