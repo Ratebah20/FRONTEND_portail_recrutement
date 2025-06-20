@@ -48,26 +48,12 @@ const menuItems = [
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, isAuthenticated, checkAuth, logout } = useAuthStore();
-
-  useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
-
-  useEffect(() => {
-    if (!isAuthenticated && !pathname.includes('/login')) {
-      router.push('/login');
-    }
-  }, [isAuthenticated, pathname, router]);
+  const { user, logout } = useAuthStore();
 
   const handleLogout = () => {
     logout();
     router.push('/login');
   };
-
-  if (!isAuthenticated) {
-    return null;
-  }
 
   return (
     <SidebarProvider>

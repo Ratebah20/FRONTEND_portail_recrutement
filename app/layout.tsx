@@ -1,6 +1,7 @@
 import "@/styles/globals.css"
 import type React from "react"
 import { QueryProvider } from "@/src/providers/QueryProvider"
+import { AuthProvider } from "@/src/providers/AuthProvider"
 import { ThemeProvider } from "@/components/theme-provider"
 import { APIDebug } from "@/src/components/debug/APIDebug"
 import type { Metadata } from "next"
@@ -25,8 +26,10 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <QueryProvider>
-            <APIDebug />
-            {children}
+            <AuthProvider>
+              <APIDebug />
+              {children}
+            </AuthProvider>
           </QueryProvider>
         </ThemeProvider>
       </body>
