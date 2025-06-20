@@ -1,8 +1,13 @@
 import "@/styles/globals.css"
-import { Inter } from "next/font/google"
-import type React from "react" // Import React
+import type React from "react"
+import { QueryProvider } from "@/src/providers/QueryProvider"
+import { ThemeProvider } from "@/components/theme-provider"
+import type { Metadata } from "next"
 
-const inter = Inter({ subsets: ["latin"] })
+export const metadata: Metadata = {
+  title: "Portail de Recrutement IA",
+  description: "Système de gestion des candidatures avec analyse IA",
+}
 
 export default function RootLayout({
   children,
@@ -10,12 +15,19 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="fr">
-      <body className={inter.className}>{children}</body>
+    <html lang="fr" suppressHydrationWarning>
+      <body className="font-sans antialiased">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <QueryProvider>
+            {children}
+          </QueryProvider>
+        </ThemeProvider>
+      </body>
     </html>
   )
 }
-
-
-
-import './globals.css'
