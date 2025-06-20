@@ -143,64 +143,65 @@ export default function ApplicationsPage() {
                     </Badge>
                   </div>
                 
-                <div className="space-y-3">
-                  {isLoading ? (
-                    Array.from({ length: 3 }).map((_, i) => (
-                      <Skeleton key={i} className="h-32" />
-                    ))
-                  ) : (
-                    getApplicationsByStatus(column.id).map((app) => (
-                      <Card
-                        key={app.id}
-                        className="p-4 cursor-move hover:shadow-lg transition-all duration-200 border-muted/50"
-                        draggable
-                        onDragStart={(e) => handleDragStart(e, app.id)}
-                      >
-                        <div className="flex items-start justify-between mb-3">
-                          <div className="flex-1">
-                            <h4 className="font-medium text-sm">
-                              {app.candidate.first_name} {app.candidate.last_name}
-                            </h4>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              {app.job.title}
-                            </p>
-                          </div>
-                          {app.ai_score && (
-                            <div className="flex items-center gap-1">
-                              <Brain className="h-3 w-3 text-muted-foreground" />
-                              <span className="text-xs font-medium">{app.ai_score}%</span>
+                  <div className="space-y-3">
+                    {isLoading ? (
+                      Array.from({ length: 3 }).map((_, i) => (
+                        <Skeleton key={i} className="h-32" />
+                      ))
+                    ) : (
+                      getApplicationsByStatus(column.id).map((app) => (
+                        <Card
+                          key={app.id}
+                          className="p-4 cursor-move hover:shadow-lg transition-all duration-200 border-muted/50"
+                          draggable
+                          onDragStart={(e) => handleDragStart(e, app.id)}
+                        >
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex-1">
+                              <h4 className="font-medium text-sm">
+                                {app.candidate.first_name} {app.candidate.last_name}
+                              </h4>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {app.job.title}
+                              </p>
                             </div>
+                            {app.ai_score && (
+                              <div className="flex items-center gap-1">
+                                <Brain className="h-3 w-3 text-muted-foreground" />
+                                <span className="text-xs font-medium">{app.ai_score}%</span>
+                              </div>
+                            )}
+                          </div>
+                          
+                          {app.job.department_name && (
+                            <Badge variant="secondary" className="text-xs mb-3">
+                              {app.job.department_name}
+                            </Badge>
                           )}
-                        </div>
-                        
-                        {app.job.department_name && (
-                          <Badge variant="secondary" className="text-xs mb-3">
-                            {app.job.department_name}
-                          </Badge>
-                        )}
-                        
-                        <div className="flex items-center justify-between pt-3 border-t">
-                          <span className="text-xs text-muted-foreground">
-                            {new Date(app.created_at).toLocaleDateString('fr-FR', { 
-                              day: 'numeric',
-                              month: 'short'
-                            })}
-                          </span>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="h-7 px-2"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              router.push(`/hr/applications/${app.id}`);
-                            }}
-                          >
-                            <Eye className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </Card>
-                    ))
-                  )}
+                          
+                          <div className="flex items-center justify-between pt-3 border-t">
+                            <span className="text-xs text-muted-foreground">
+                              {new Date(app.created_at).toLocaleDateString('fr-FR', { 
+                                day: 'numeric',
+                                month: 'short'
+                              })}
+                            </span>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-7 px-2"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                router.push(`/hr/applications/${app.id}`);
+                              }}
+                            >
+                              <Eye className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </Card>
+                      ))
+                    )}
+                  </div>
                 </div>
               );
             })}
