@@ -35,7 +35,7 @@ import {
   Brain
 } from 'lucide-react';
 
-const menuItems = [
+const hrMenuItems = [
   { icon: Home, label: 'Tableau de bord', href: '/hr' },
   { icon: FileText, label: 'Candidatures', href: '/hr/applications' },
   { icon: Briefcase, label: 'Offres d\'emploi', href: '/hr/jobs' },
@@ -45,10 +45,23 @@ const menuItems = [
   { icon: Settings, label: 'Paramètres', href: '/hr/settings' },
 ];
 
+const managerMenuItems = [
+  { icon: Home, label: 'Tableau de bord', href: '/manager' },
+  { icon: Calendar, label: 'Mes entretiens', href: '/manager/interviews' },
+  { icon: FileText, label: 'Candidatures département', href: '/manager/applications' },
+  { icon: BarChart3, label: 'Statistiques', href: '/manager/stats' },
+  { icon: Settings, label: 'Paramètres', href: '/manager/settings' },
+];
+
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const { user, logout } = useAuthStore();
+
+  // Déterminer le rôle basé sur l'URL ou le user
+  const isManager = pathname.startsWith('/manager');
+  const menuItems = isManager ? managerMenuItems : hrMenuItems;
+  const dashboardTitle = isManager ? 'Portail Manager' : 'Portail RH';
 
   const handleLogout = () => {
     logout();
@@ -61,7 +74,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         {/* Sidebar */}
         <Sidebar>
           <SidebarHeader className="p-4 border-b">
-            <h2 className="text-lg font-semibold">Portail RH</h2>
+            <h2 className="text-lg font-semibold">{dashboardTitle}</h2>
           </SidebarHeader>
           <SidebarContent>
             <SidebarMenu>

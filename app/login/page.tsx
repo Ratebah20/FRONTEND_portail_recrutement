@@ -14,7 +14,7 @@ import { User, Lock, AlertCircle } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, isAuthenticated } = useAuthStore();
+  const { login, isAuthenticated, user } = useAuthStore();
   const [formData, setFormData] = useState({
     username: '',
     password: ''
@@ -24,10 +24,11 @@ export default function LoginPage() {
 
   useEffect(() => {
     // Rediriger si déjà connecté
-    if (isAuthenticated) {
-      router.push('/hr');
+    if (isAuthenticated && user) {
+      const redirectPath = user.role === 'manager' ? '/manager' : '/hr';
+      router.push(redirectPath);
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,7 +37,7 @@ export default function LoginPage() {
 
     try {
       await login(formData.username, formData.password);
-      router.push('/hr');
+      // La redirection sera gérée par le useEffect une fois que user est mis à jour
     } catch (err) {
       setError('Nom d\'utilisateur ou mot de passe incorrect');
     } finally {
@@ -119,8 +120,8 @@ export default function LoginPage() {
           <div className="mt-6 p-4 bg-muted rounded-lg">
             <p className="text-sm text-muted-foreground">
               <strong>Comptes de démonstration :</strong><br />
-              RH : admin_rh / password123<br />
-              Manager : manager_it / password123
+              RH : admin_rh / password123 → <span className="text-xs">/hr</span><br />
+              Manager : manager_it / password123 → <span className="text-xs">/manager</span>
             </p>
           </div>
         </Card>
