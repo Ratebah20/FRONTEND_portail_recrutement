@@ -87,7 +87,8 @@ interface SkillsSphereProps {
   skills: Skill[];
 }
 
-export function SkillsSphere({ skills }: SkillsSphereProps) {
+// Composant interne qui utilise les hooks Three.js
+function SkillsSphereContent({ skills }: { skills: Skill[] }) {
   const groupRef = useRef<THREE.Group>(null);
   
   useFrame((state) => {
@@ -124,29 +125,38 @@ export function SkillsSphere({ skills }: SkillsSphereProps) {
   };
   
   return (
+    <>
+      <ambientLight intensity={0.5} />
+      <pointLight position={[10, 10, 10]} intensity={1} />
+      <pointLight position={[-10, -10, -10]} intensity={0.5} />
+      
+      <group ref={groupRef}>
+        {skills.map((skill, index) => (
+          <SkillNode
+            key={skill.name}
+            skill={skill}
+            position={positions[index]}
+            color={categoryColors[skill.category || 'Other'] || categoryColors.Other}
+          />
+        ))}
+      </group>
+      
+      <OrbitControls
+        enablePan={false}
+        enableZoom={true}
+        minDistance={5}
+        maxDistance={15}
+      />
+    </>
+  );
+}
+
+// Composant principal qui encapsule le Canvas
+export function SkillsSphere({ skills }: SkillsSphereProps) {
+  return (
     <div className="h-full w-full">
       <Canvas camera={{ position: [0, 0, 8], fov: 60 }}>
-        <ambientLight intensity={0.5} />
-        <pointLight position={[10, 10, 10]} intensity={1} />
-        <pointLight position={[-10, -10, -10]} intensity={0.5} />
-        
-        <group ref={groupRef}>
-          {skills.map((skill, index) => (
-            <SkillNode
-              key={skill.name}
-              skill={skill}
-              position={positions[index]}
-              color={categoryColors[skill.category || 'Other'] || categoryColors.Other}
-            />
-          ))}
-        </group>
-        
-        <OrbitControls
-          enablePan={false}
-          enableZoom={true}
-          minDistance={5}
-          maxDistance={15}
-        />
+        <SkillsSphereContent skills={skills} />
       </Canvas>
     </div>
   );
