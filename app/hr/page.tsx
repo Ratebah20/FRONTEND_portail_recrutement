@@ -4,6 +4,10 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AnimatedText } from '@/src/components/animations/AnimatedText';
 import { DashboardLayout } from '@/src/components/layouts/DashboardLayout';
+import { StatsVisualization } from '@/src/components/3d/StatsVisualization';
+import { useApplicationStats, useApplications } from '@/src/hooks/useApplications';
+import { useJobs } from '@/src/hooks/useJobs';
+import { Skeleton } from '@/components/ui/skeleton';
 import { 
   Users, 
   Briefcase, 
@@ -12,25 +16,44 @@ import {
   FileText,
   UserCheck,
   Clock,
-  CheckCircle
+  CheckCircle,
+  XCircle,
+  AlertCircle
 } from 'lucide-react';
-
-// Données fictives pour la démo
-const stats = [
-  { label: 'Candidatures totales', value: 234, icon: FileText, trend: '+12%' },
-  { label: 'En cours d\'examen', value: 45, icon: Clock, trend: '+5%' },
-  { label: 'Entretiens planifiés', value: 18, icon: Calendar, trend: '+8%' },
-  { label: 'Candidats acceptés', value: 7, icon: UserCheck, trend: '+15%' },
-];
-
-const recentApplications = [
-  { id: 1, name: 'Marie Dupont', position: 'Développeur Full Stack', status: 'En cours', score: 85 },
-  { id: 2, name: 'Jean Martin', position: 'Chef de Projet', status: 'Entretien', score: 78 },
-  { id: 3, name: 'Sophie Bernard', position: 'Designer UX/UI', status: 'Nouveau', score: null },
-  { id: 4, name: 'Pierre Durand', position: 'Data Analyst', status: 'En cours', score: 92 },
-];
+import { ApplicationStatus } from '@/src/types';
 
 export default function HRDashboard() {
+  const { stats, isLoading: statsLoading } = useApplicationStats();
+  const { data: applications, isLoading: appsLoading } = useApplications();
+  const { data: jobs } = useJobs();
+  
+  // Préparer les données pour la visualisation 3D
+  const stats3DData = stats ? [
+    { label: 'Total', value: stats.total, color: '#3b82f6' },
+    { label: 'Nouvelles', value: stats.submitted, color: '#f59e0b' },
+    { label: 'En cours', value: stats.underReview, color: '#10b981' },
+    { label: 'Entretiens', value: stats.interview, color: '#8b5cf6' },
+    { label: 'Acceptées', value: stats.accepted, color: '#10b981' },
+  ] : [];
+  
+  const statsCards = [
+    { label: 'Candidatures totales', value: stats?.total || 0, icon: FileText, trend: '+12%', color: 'text-blue-600' },
+    { label: 'En cours d\'examen', value: stats?.underReview || 0, icon: Clock, trend: '+5%', color: 'text-yellow-600' },
+    { label: 'Entretiens planifiés', value: stats?.interview || 0, icon: Calendar, trend: '+8%', color: 'text-purple-600' },
+    { label: 'Candidats acceptés', value: stats?.accepted || 0, icon: UserCheck, trend: '+15%', color: 'text-green-600' },
+  ];
+  
+  const getStatusBadge = (status: ApplicationStatus) => {
+    const badges = {
+      [ApplicationStatus.SUBMITTED]: { label: 'Nouveau', class: 'bg-blue-100 text-blue-700' },
+      [ApplicationStatus.UNDER_REVIEW]: { label: 'En cours', class: 'bg-yellow-100 text-yellow-700' },
+      [ApplicationStatus.INTERVIEW]: { label: 'Entretien', class: 'bg-purple-100 text-purple-700' },
+      [ApplicationStatus.REJECTED]: { label: 'Refusé', class: 'bg-red-100 text-red-700' },
+      [ApplicationStatus.ACCEPTED]: { label: 'Accepté', class: 'bg-green-100 text-green-700' },
+    };
+    return badges[status] || { label: 'Inconnu', class: 'bg-gray-100 text-gray-700' };
+  };
+  
   return (
     <DashboardLayout>
       <div className="container mx-auto px-4 py-8">
@@ -48,24 +71,38 @@ export default function HRDashboard() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {stats.map((stat, index) => {
-          const Icon = stat.icon;
-          return (
-            <Card key={index} className="p-6 hover:shadow-lg transition-shadow">
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-3 bg-primary/10 rounded-lg">
-                  <Icon className="h-6 w-6 text-primary" />
+        {statsLoading ? (
+          Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-32" />
+          ))
+        ) : (
+          statsCards.map((stat, index) => {
+            const Icon = stat.icon;
+            return (
+              <Card key={index} className="p-6 hover:shadow-lg transition-shadow">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="p-3 bg-primary/10 rounded-lg">
+                    <Icon className="h-6 w-6 text-primary" />
+                  </div>
+                  <span className={`text-sm font-medium ${stat.color}`}>
+                    {stat.trend}
+                  </span>
                 </div>
-                <span className="text-sm font-medium text-green-600">
-                  {stat.trend}
-                </span>
-              </div>
-              <h3 className="text-2xl font-bold mb-1">{stat.value}</h3>
-              <p className="text-sm text-muted-foreground">{stat.label}</p>
-            </Card>
-          );
-        })}
+                <h3 className="text-2xl font-bold mb-1">{stat.value}</h3>
+                <p className="text-sm text-muted-foreground">{stat.label}</p>
+              </Card>
+            );
+          })
+        )}
       </div>
+      
+      {/* Visualisation 3D des statistiques */}
+      {!statsLoading && stats && (
+        <Card className="p-6 mb-8">
+          <h2 className="text-xl font-semibold mb-4">Visualisation 3D des candidatures</h2>
+          <StatsVisualization stats={stats3DData} />
+        </Card>
+      )}
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -80,31 +117,37 @@ export default function HRDashboard() {
             </div>
             
             <div className="space-y-4">
-              {recentApplications.map((app) => (
-                <div key={app.id} className="flex items-center justify-between p-4 bg-muted/50 rounded-lg hover:bg-muted transition-colors">
-                  <div className="flex-1">
-                    <h3 className="font-medium">{app.name}</h3>
-                    <p className="text-sm text-muted-foreground">{app.position}</p>
-                  </div>
-                  
-                  <div className="flex items-center gap-4">
-                    {app.score && (
-                      <div className="text-right">
-                        <p className="text-sm font-medium">Score IA</p>
-                        <p className="text-2xl font-bold text-primary">{app.score}%</p>
+              {appsLoading ? (
+                Array.from({ length: 4 }).map((_, i) => (
+                  <Skeleton key={i} className="h-20" />
+                ))
+              ) : (
+                applications?.slice(0, 5).map((app) => {
+                  const statusBadge = getStatusBadge(app.status);
+                  return (
+                    <div key={app.id} className="flex items-center justify-between p-4 bg-muted/50 rounded-lg hover:bg-muted transition-colors">
+                      <div className="flex-1">
+                        <h3 className="font-medium">{app.candidate.first_name} {app.candidate.last_name}</h3>
+                        <p className="text-sm text-muted-foreground">{app.job.title}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{app.job.department.name}</p>
                       </div>
-                    )}
-                    
-                    <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      app.status === 'Nouveau' ? 'bg-blue-100 text-blue-700' :
-                      app.status === 'En cours' ? 'bg-yellow-100 text-yellow-700' :
-                      'bg-green-100 text-green-700'
-                    }`}>
-                      {app.status}
+                      
+                      <div className="flex items-center gap-4">
+                        {app.ai_score && (
+                          <div className="text-right">
+                            <p className="text-sm font-medium">Score IA</p>
+                            <p className="text-2xl font-bold text-primary">{app.ai_score}%</p>
+                          </div>
+                        )}
+                        
+                        <div className={`px-3 py-1 rounded-full text-xs font-medium ${statusBadge.class}`}>
+                          {statusBadge.label}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              ))}
+                  );
+                })
+              )}
             </div>
           </Card>
         </div>
