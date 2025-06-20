@@ -1,7 +1,7 @@
 // Configuration de base pour les appels API
 import axios from 'axios';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
 
 // Client API configuré
 export const apiClient = axios.create({
