@@ -169,9 +169,12 @@ export default function ApplicationsPage() {
                         <div className="flex gap-2">
                           <Button
                             size="sm"
-                            variant="ghost"
+                            variant="outline"
                             className="h-7 px-2"
-                            onClick={() => router.push(`/hr/applications/${app.id}`)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              router.push(`/hr/applications/${app.id}`);
+                            }}
                           >
                             <Eye className="h-3 w-3 mr-1" />
                             Voir
