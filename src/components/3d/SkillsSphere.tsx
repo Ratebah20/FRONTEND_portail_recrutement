@@ -20,15 +20,16 @@ interface SkillNodeProps {
 function SkillNode({ skill, position, color }: SkillNodeProps) {
   const meshRef = useRef<THREE.Mesh>(null);
   const [hovered, setHovered] = useState(false);
+  const scaleRef = useRef(1);
   
-  useFrame((state) => {
+  useFrame(() => {
     if (meshRef.current) {
       meshRef.current.rotation.y += 0.01;
-      if (hovered) {
-        meshRef.current.scale.setScalar(1.2);
-      } else {
-        meshRef.current.scale.setScalar(1);
-      }
+      
+      // Animation de scale avec lerp
+      const targetScale = hovered ? 1.2 : 1;
+      scaleRef.current += (targetScale - scaleRef.current) * 0.1;
+      meshRef.current.scale.setScalar(scaleRef.current);
     }
   });
   
@@ -39,8 +40,14 @@ function SkillNode({ skill, position, color }: SkillNodeProps) {
       <Sphere
         ref={meshRef}
         args={[size, 32, 16]}
-        onPointerOver={() => setHovered(true)}
-        onPointerOut={() => setHovered(false)}
+        onPointerOver={(e) => {
+          e.stopPropagation();
+          setHovered(true);
+        }}
+        onPointerOut={(e) => {
+          e.stopPropagation();
+          setHovered(false);
+        }}
       >
         <meshStandardMaterial
           color={color}

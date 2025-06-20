@@ -105,11 +105,25 @@ export default function ApplicationDetailPage() {
   }
   
   // Parser les compétences de l'analyse IA si disponible
-  const parseSkills = (analysis: string | null): any[] => {
+  const parseSkills = (analysis: string | null, aiScore: number | null): any[] => {
+    // Si on a un score mais pas d'analyse détaillée, générer des données de démo
+    if (aiScore && !analysis) {
+      return [
+        { name: 'React', score: 90, category: 'Frontend' },
+        { name: 'TypeScript', score: 85, category: 'Frontend' },
+        { name: 'Node.js', score: 80, category: 'Backend' },
+        { name: 'Python', score: 75, category: 'Backend' },
+        { name: 'PostgreSQL', score: 70, category: 'Database' },
+        { name: 'Docker', score: 65, category: 'DevOps' },
+        { name: 'Leadership', score: 80, category: 'Soft Skills' },
+        { name: 'Communication', score: 85, category: 'Soft Skills' }
+      ];
+    }
+    
     if (!analysis) return [];
     
-    // Ici, on devrait parser l'analyse IA pour extraire les compétences
-    // Pour la démo, on utilise des données fictives
+    // TODO: Parser l'analyse IA réelle pour extraire les compétences
+    // Pour l'instant, on retourne des données de démo si on a une analyse
     return [
       { name: 'React', score: 90, category: 'Frontend' },
       { name: 'TypeScript', score: 85, category: 'Frontend' },
@@ -122,7 +136,7 @@ export default function ApplicationDetailPage() {
     ];
   };
   
-  const skills = parseSkills(application.ai_analysis);
+  const skills = parseSkills(application.ai_analysis, application.ai_score);
   
   const statusIcons = {
     1: Clock,      // SUBMITTED
@@ -311,16 +325,16 @@ export default function ApplicationDetailPage() {
               <Card className="p-6">
                 <h3 className="text-lg font-semibold mb-4">Score IA</h3>
                 <div className="h-[300px]">
-                  <ScoreGauge3D score={application.ai_score} />
+                  <ScoreGauge3D score={Math.round(application.ai_score)} />
                 </div>
                 <div className="mt-4 text-center">
                   <p className="text-sm text-muted-foreground">
                     Correspondance avec le poste
                   </p>
                   <p className="text-2xl font-bold mt-1">
-                    {application.ai_score >= 80 && 'Excellente'}
-                    {application.ai_score >= 60 && application.ai_score < 80 && 'Bonne'}
-                    {application.ai_score < 60 && 'Moyenne'}
+                    {Math.round(application.ai_score) >= 80 && 'Excellente'}
+                    {Math.round(application.ai_score) >= 60 && Math.round(application.ai_score) < 80 && 'Bonne'}
+                    {Math.round(application.ai_score) < 60 && 'Moyenne'}
                   </p>
                 </div>
               </Card>
