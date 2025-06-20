@@ -2,6 +2,7 @@ import "@/styles/globals.css"
 import type React from "react"
 import { QueryProvider } from "@/src/providers/QueryProvider"
 import { ThemeProvider } from "@/components/theme-provider"
+import { APIDebug } from "@/src/components/debug/APIDebug"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
@@ -24,6 +25,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <QueryProvider>
+            <APIDebug />
             {children}
           </QueryProvider>
         </ThemeProvider>
